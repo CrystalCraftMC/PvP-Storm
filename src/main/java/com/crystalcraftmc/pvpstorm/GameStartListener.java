@@ -25,6 +25,7 @@
 
 package com.crystalcraftmc.pvpstorm;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -88,12 +89,16 @@ public class GameStartListener implements Listener, CommandExecutor {
     public void onEntityVsEntity(EntityDamageByEntityEvent event) {
         if(enablePlayerHitStormerCounting) {
             if(event.getDamager() instanceof Player) {
+                Bukkit.broadcastMessage("debug: damager is an instance of player");
                 if(event.getEntity() instanceof Player) {
+                    Bukkit.broadcastMessage("debug: damagee is an instance of player");
                     Player damagee = (Player)event.getEntity();
                     Player damager = (Player)event.getDamager();
-                    if(damagee.getName().equals("jflory7")) {
-                        if(playersWhoHitStormer.size() == 0)
+                    if(damagee.getName().equals("jflory7") || damagee.getName().equals("Jwood9198")) {
+                        if(playersWhoHitStormer.size() == 0) {
                             playersWhoHitStormer.add(damager);
+                            Bukkit.broadcastMessage("debug: player added to arraylist");
+                        }
                         else {
                             boolean isDamagersFirstHitOnStormer = true;
                             for(int i = 0; i < playersWhoHitStormer.size(); i++) {
@@ -101,8 +106,10 @@ public class GameStartListener implements Listener, CommandExecutor {
                                     isDamagersFirstHitOnStormer = false;
                                 }
                             }
-                            if(isDamagersFirstHitOnStormer)
+                            if(isDamagersFirstHitOnStormer) {
                                 playersWhoHitStormer.add(damager);
+                                Bukkit.broadcastMessage("debug: player added to arraylist");
+                            }
                         } 
                     }  
             
