@@ -27,8 +27,10 @@ package com.crystalcraftmc.pvpstorm;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PvPStorm extends JavaPlugin {
@@ -45,19 +47,27 @@ public class PvPStorm extends JavaPlugin {
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        Player p = (Player) sender;
+        World world = p.getWorld();
+
         if (cmd.getName().equalsIgnoreCase("storm")) {
-            if (args.length == 1) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("This command can only be run by a player.");
+                return false;
+            } else if (args.length == 1) {
                 return false;
             } else if (args.length > 1) {
                 if (args[0].equalsIgnoreCase("start")) {
                     Bukkit.broadcastMessage(ChatColor.DARK_RED + getConfig().getString("start-message"));
-                    // TODO Change weather to thunder + lightning?
+                    world.setStorm(true);
                     // TODO Implement a timer countdown?
                     // TODO Alert the listener to begin counting who hits the Stormer, in order to give prizes at end
                     return true;
                 } else if (args[0].equalsIgnoreCase("stop")) {
                     Bukkit.broadcastMessage(ChatColor.AQUA + getConfig().getString("end-message"));
-                    // TODO Reset weather to sun?
+                    world.setStorm(false);
+                    world.setThundering(true);
+                    world.setThunderDuration(5000);
                     // TODO Alert listener to stop counting and give out awards
                     return true;
                 } else if (args[0].equalsIgnoreCase("power")) {
@@ -66,12 +76,15 @@ public class PvPStorm extends JavaPlugin {
                         // TODO Output a list of all possible powers to the user
                         return true;
                     } else if (args[1].equalsIgnoreCase("flare")) {
+                        Bukkit.broadcastMessage("[INSERT PLAYER NAME VARIABLE] " + ChatColor.YELLOW + " used " + ChatColor.GOLD + " FLARE " + ChatColor.YELLOW + " ability!");
                         // TODO Damage players in radius, temporarily lower health
                         return true;
                     } else if (args[1].equalsIgnoreCase("vanish")) {
+                        Bukkit.broadcastMessage("[INSERT PLAYER NAME VARIABLE] " + ChatColor.YELLOW + " used " + ChatColor.GRAY + " VANISH " + ChatColor.YELLOW + " ability!");
                         // TODO Make user invisible at expense of health
                         return true;
                     } else if (args[1].equalsIgnoreCase("timewarp")) {
+                        Bukkit.broadcastMessage("[INSERT PLAYER NAME VARIABLE] " + ChatColor.YELLOW + " used " + ChatColor.RED + " TIMEWARP " + ChatColor.YELLOW + " ability!");
                         // TODO Instantly move the user backwards about 10 blocks, but add slowness for a few seconds
                         return true;
                     }
@@ -80,6 +93,7 @@ public class PvPStorm extends JavaPlugin {
                 }
             }
         }
+        return false;
     }
     
     private GameStartListener gameStart = new GameStartListener(this);
