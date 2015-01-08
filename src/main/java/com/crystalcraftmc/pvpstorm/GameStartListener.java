@@ -32,17 +32,73 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 public class GameStartListener implements Listener, CommandExecutor {
     PvPStorm plugin;
-    
+    private ArrayList<Player> playersWhoHitStormer; //holds array of Player objects recording who hit flory
+    private boolean enablePlayerHitStormerCounting; //enables onEntityVsEntity listener method
+  
     public GameStartListener(PvPStorm plugin) {
         this.plugin = plugin;
+        playersWhoHitStormer = new ArrayList<Player>();
+        enablePlayerHitStormerCounting = false;
     }
     
     
     // WARNING: The following listener code was me experimenting. Needs research! - jf
+    // WARNING#2:  I added a few commands to comply with my untested algorithm - jwood
+    // Not on my computer at the moment - though I'll be able to test code tomorrow - jwood
     @EventHandler
     public void onStart(PlayerCommandPreprocessEvent useCommand) {
         if (useCommand.equals("start")) {
             // TODO Implement counts of which players hit the Stormer - might use another event type?
+            playerHitStormerCounting = true;
         }
+        else if(useCommand.equals("stop")) {
+            playerHitStormerCounting = false;
+        }
+        else if(useCommand.equals("reset")) {
+            playerHitStormerCounting = false;
+            playersWhoHitStormer = new ArrayList<Player>(); //empties the arraylist
+        }
+    }
+    
+    // Warning below listener is untested! Though I will explain the idea - jwood
+    //listener is called when one entity hits another
+    //if the damager & damagee are both instanceof Player and the damagee.getName() is jflory7
+    //then this will record the Player object of the damager - the algorithm is set up so
+    //no duplicate Player objects are added to the arraylist
+    //note: an arraylist is an array of objects -- with the unique trait of being able to add
+    //elements with the ArrayLists's add method, to see how many objects you've saved you can
+    //call the ArrayList's size() method, and to get a specific object, you use the
+    //ArrayList's get(index) method, where index is an int (0 represents the first element)
+    //The result is a method that will start listening upon the "start" command (after it's tested)
+    //and will add each player that hits flory to the ArrayList (no duplicates), and stops listening
+    //upon the "stop" command. (added a "reset" command which turns the boolean flag variable
+    //playerHitStormerCounting to false (disables listener below), and empties the current arraylist)
+    //again, I note that this method is untested - jwood
+    @EventHandler
+    public void onEntityVsEntity(EntityDamageByEntityEvent event) {
+        if(playerHitStormerCounting) {
+            if(event.getDamager() instanceof Player) {
+                if(event.getEntity() instanceof Player) {
+                    Player damagee = (Player)event.getEntity();
+                    Player damager = (Player)event.getDamager();
+                    if(damagee.getName().equals("jflory7")) {
+                        if(playersWhoHitStormer.size() == 0)
+                            playersWhoHitStormer.add(damager);
+                        else {
+                            boolean isDamagersFirstHitOnStormer = true;
+                            for(int i = 0; i < playersWhoHitStormer.size(); i++) {
+                                if(damager.getName().equals(playersWhoHitStormer.get(i).getName())) {
+                                    isDamagersFirstHitOnStormer = false;
+                                }
+                            }
+                            if(isDamagersFirstHitOnStormer)
+                                playersWhoHitStormer.add(damager);
+                        } 
+                    }  
+            
+                }  
+            }
+        }
+    
     }
 }
