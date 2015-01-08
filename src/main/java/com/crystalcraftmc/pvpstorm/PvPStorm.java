@@ -37,7 +37,7 @@ public class PvPStorm extends JavaPlugin {
     // TODO Implement mob boss health bar - perhaps in listener? NEEDS RESEARCH.
     
     public void onEnable() {
-        getLogger().info(ChatColor.AQUA + "PvP Storm has been initialized!");
+        getLogger().info(ChatColor.AQUA + "PvP Storm v0.0.1 has been initialized!");
         getServer().getPluginManager().registerEvents(gameStart, this);
         getServer().getPluginManager().registerEvents(gameEnd, this);
     }
@@ -60,7 +60,12 @@ public class PvPStorm extends JavaPlugin {
                 if (args[0].equalsIgnoreCase("start")) {
                     Bukkit.broadcastMessage(ChatColor.DARK_RED + getConfig().getString("start-message"));
                     world.setStorm(true);
-                    // TODO Implement a timer countdown?
+                    this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+                        @Override
+                        public void run() {
+                            Bukkit.broadcastMessage(ChatColor.DARK_RED + "The PvP Storm is now hitting the Arena!")
+                        }
+                    }, 12000L); // 12000L == 10 minutes, 60L == 3 seconds, 20L == 1 second (it's the # of ticks)
                     // TODO Alert the listener to begin counting who hits the Stormer, in order to give prizes at end
                     return true;
                 } else if (args[0].equalsIgnoreCase("stop")) {
@@ -96,6 +101,6 @@ public class PvPStorm extends JavaPlugin {
         return false;
     }
     
-    private GameStartListener gameStart = new GameStartListener(this);
-    private GameEndListener gameEnd = new GameEndListener(this);
+    private final GameStartListener gameStart = new GameStartListener(this);
+    private final GameEndListener gameEnd = new GameEndListener(this);
 }
