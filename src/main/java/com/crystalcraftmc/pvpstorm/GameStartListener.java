@@ -56,7 +56,7 @@ public class GameStartListener implements Listener, CommandExecutor {
         }
         else if(useCommand.equals("reset")) {
             playerHitStormerCounting = false;
-            playersWhoHitStormer = new ArrayList<Player(); //empties the arraylist
+            playersWhoHitStormer = new ArrayList<Player>(); //empties the arraylist
         }
     }
     
