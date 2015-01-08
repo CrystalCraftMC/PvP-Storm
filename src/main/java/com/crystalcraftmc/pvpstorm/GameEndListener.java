@@ -29,6 +29,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.event.Listener;
 
 public class GameEndListener implements Listener, CommandExecutor {
+    // TODO Finish and test GameStartListener before working on this.
+
     PvPStorm plugin;
     
     public GameEndListener(PvPStorm plugin) {
