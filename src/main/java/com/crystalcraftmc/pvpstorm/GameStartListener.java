@@ -58,6 +58,12 @@ public class GameStartListener implements Listener, CommandExecutor {
             playerHitStormerCounting = false;
             playersWhoHitStormer = new ArrayList<Player>(); //empties the arraylist
         }
+        else if(useCommand.equals("getArrayList")) {
+            //this command is mostly for testing / debugging
+            for(int i = 0; i < playersWhoHitStormer.size(); i++) {
+                useCommand.getPlayer().sendMessage(playersWhoHitStormer.get(i).getName());
+            }
+        }
     }
     
     // Warning below listener is untested! Though I will explain the idea - jwood
