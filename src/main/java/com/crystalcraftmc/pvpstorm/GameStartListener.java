@@ -26,9 +26,13 @@
 package com.crystalcraftmc.pvpstorm;
 
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+
+import java.util.ArrayList;
 
 public class GameStartListener implements Listener, CommandExecutor {
     PvPStorm plugin;
@@ -49,13 +53,13 @@ public class GameStartListener implements Listener, CommandExecutor {
     public void onStart(PlayerCommandPreprocessEvent useCommand) {
         if (useCommand.equals("start")) {
             // TODO Implement counts of which players hit the Stormer - might use another event type?
-            playerHitStormerCounting = true;
+            enablePlayerHitStormerCounting = true;
         }
         else if(useCommand.equals("stop")) {
-            playerHitStormerCounting = false;
+            enablePlayerHitStormerCounting = false;
         }
         else if(useCommand.equals("reset")) {
-            playerHitStormerCounting = false;
+            enablePlayerHitStormerCounting = false;
             playersWhoHitStormer = new ArrayList<Player>(); //empties the arraylist
         }
         else if(useCommand.equals("getArrayList")) {
@@ -82,7 +86,7 @@ public class GameStartListener implements Listener, CommandExecutor {
     //again, I note that this method is untested - jwood
     @EventHandler
     public void onEntityVsEntity(EntityDamageByEntityEvent event) {
-        if(playerHitStormerCounting) {
+        if(enablePlayerHitStormerCounting) {
             if(event.getDamager() instanceof Player) {
                 if(event.getEntity() instanceof Player) {
                     Player damagee = (Player)event.getEntity();
