@@ -1,1 +1,7 @@
 # PvP Storm's Configuration File
+
+start-message: A PvP Storm approaches the PvP Arena!
+end-message: The skies clear and the world returns to normal.
+
+death-prizes:
+participation-prizes:
