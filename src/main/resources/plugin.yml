@@ -1,4 +1,4 @@
-name: PvP Storm
+name: ${finalName}
 main: com.crystalcraftmc.pvpstorm.PvPStorm
 version: ${version}
 description: Make your players fight the powers of the gods!
