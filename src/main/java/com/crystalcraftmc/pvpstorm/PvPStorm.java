@@ -54,7 +54,7 @@ public class PvPStorm extends JavaPlugin {
                     this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
                         @Override
                         public void run() {
-                            Bukkit.broadcastMessage(ChatColor.DARK_RED + "The PvP Storm is now hitting the Arena!")
+                            Bukkit.broadcastMessage(ChatColor.DARK_RED + "The PvP Storm is now hitting the Arena!");
                         }
                     }, 12000L); // 12000L == 10 minutes, 60L == 3 seconds, 20L == 1 second (it's the # of ticks)
                     // TODO Alert the listener to begin counting who hits the Stormer, in order to give prizes at end
