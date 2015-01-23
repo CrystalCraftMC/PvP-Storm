@@ -61,7 +61,10 @@ public class PvPStorm extends JavaPlugin {
                     // TODO Alert listener to stop counting and give out awards
                     return true;
                 } else if (args[0].equalsIgnoreCase("power")) {
-                    // TODO Block console from running these commands!
+                    if (!(sender instanceof Player)) {
+                        sender.sendMessage("Only players can run this command.");
+                        return true;
+                    }
                     if (args.length < 2) {
                         // TODO Output a list of all possible powers to the user
                         return true;
