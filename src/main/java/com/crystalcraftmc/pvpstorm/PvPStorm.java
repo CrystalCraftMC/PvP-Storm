@@ -51,17 +51,20 @@ public class PvPStorm extends JavaPlugin {
             } else if (args.length > 1) {
                 if (args[0].equalsIgnoreCase("start")) {
                     Bukkit.broadcastMessage(ChatColor.DARK_RED + getConfig().getString("start-message"));
-                    // TODO Change weather to thunder + lightning?
+                    Bukkit.getWorld("world").setStorm(true);
                     // TODO Implement a timer countdown?
                     // TODO Alert the listener to begin counting who hits the Stormer, in order to give prizes at end
                     return true;
                 } else if (args[0].equalsIgnoreCase("stop")) {
                     Bukkit.broadcastMessage(ChatColor.AQUA + getConfig().getString("end-message"));
-                    // TODO Reset weather to sun?
+                    Bukkit.getWorld("world").setStorm(false);
                     // TODO Alert listener to stop counting and give out awards
                     return true;
                 } else if (args[0].equalsIgnoreCase("power")) {
-                    // TODO Block console from running these commands!
+                    if(!(sender instanceof Player)) {
+                        sender.sendMessage("Only players can run this command.");
+                        return true;
+                    }
                     if (args.length < 2) {
                         // TODO Output a list of all possible powers to the user
                         return true;
