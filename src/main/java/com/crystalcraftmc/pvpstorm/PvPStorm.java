@@ -102,6 +102,11 @@ public class PvPStorm extends JavaPlugin {
                     } else if (args[1].equalsIgnoreCase("timewarp")) {
                         Bukkit.broadcastMessage("[INSERT PLAYER NAME VARIABLE] " + ChatColor.YELLOW + " used " + ChatColor.RED + " TIMEWARP " + ChatColor.YELLOW + " ability!");
                         // TODO Instantly move the user backwards about 10 blocks, but add slowness for a few seconds
+                        loc = p.getLocation();
+                        loc.setX(loc.getX() - 10);
+                        loc.setY(loc.getY() + 5);
+                        loc.setZ(loc.getZ() - 10);
+                        p.addPotionEffect();
                         return true;
                     }
                 } else {
