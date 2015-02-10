@@ -17,16 +17,12 @@
 package com.crystalcraftmc.pvpstorm;
 
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -46,7 +42,7 @@ public class GameStartListener implements Listener  {
     }
 	
 	public GameStartListener(PvPStorm plugin) {
-		this.plugin = plugin;
+		//this.plugin = plugin; # This line needs to be reworked, throwing compiler error
 		playersWhoHitStormer = new TreeSet<String>();
 		enablePlayerHitStormerCounting = false;
 	}

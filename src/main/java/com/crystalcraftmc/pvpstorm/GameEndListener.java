@@ -16,10 +16,9 @@
 
 package com.crystalcraftmc.pvpstorm;
 
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.event.Listener;
 
-public class GameEndListener implements Listener, CommandExecutor {
+public class GameEndListener implements Listener {
     // TODO Finish and test GameStartListener before working on this.
 
     PvPStorm plugin;
