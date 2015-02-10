@@ -67,13 +67,17 @@ public class PvPStorm extends JavaPlugin {
                     // TODO Alert listener to stop counting and give out awards
                     return true;
                 } else if (args[0].equalsIgnoreCase("power")) {
-                    // TODO Block console from running these commands!
                     if (args.length < 2) {
-                        // TODO Output a list of all possible powers to the user
+                        sender.sendMessage(ChatColor.YELLOW + "The available Storm powers are:" +
+                                ChatColor.RED + "/storm power flare" +
+                                ChatColor.GRAY + "/storm power vanish" +
+                                ChatColor.AQUA + "/storm power timewarp");
                         return true;
                     } else if (args[1].equalsIgnoreCase("flare")) {
                         Bukkit.broadcastMessage("[INSERT PLAYER NAME VARIABLE] " + ChatColor.YELLOW + " used " + ChatColor.GOLD + " FLARE " + ChatColor.YELLOW + " ability!");
                         // TODO Damage players in radius, temporarily lower health
+                        p.getNearbyEntities()
+                        [anyone who is nearby, not finished with this].setHealth(p.getHealth() - 2.0);
                         return true;
                     } else if (args[1].equalsIgnoreCase("vanish")) {
                         Bukkit.broadcastMessage("[INSERT PLAYER NAME VARIABLE] " + ChatColor.YELLOW + " used " + ChatColor.GRAY + " VANISH " + ChatColor.YELLOW + " ability!");
