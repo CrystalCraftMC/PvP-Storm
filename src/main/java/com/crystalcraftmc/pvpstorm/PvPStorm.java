@@ -53,9 +53,9 @@ public class PvPStorm extends JavaPlugin {
             if (!(sender instanceof Player)) {
                 sender.sendMessage("This command can only be run by a player.");
                 return false;
-            } else if (args.length == 1) {
+            } else if (args.length < 1) {
                 return false;
-            } else if (args.length > 1) {
+            } else if (args.length >= 1) {
                 if (args[0].equalsIgnoreCase("start")) {
                     Bukkit.broadcastMessage(ChatColor.DARK_RED + getConfig().getString("start-message"));
                     world.setStorm(true);
@@ -70,8 +70,6 @@ public class PvPStorm extends JavaPlugin {
                 } else if (args[0].equalsIgnoreCase("stop")) {
                     Bukkit.broadcastMessage(ChatColor.AQUA + getConfig().getString("end-message"));
                     world.setStorm(false);
-                    world.setThundering(true);
-                    world.setThunderDuration(5000);
                     // TODO Alert listener to stop counting and give out awards
                     return true;
                 } else if (args[0].equalsIgnoreCase("power")) {
