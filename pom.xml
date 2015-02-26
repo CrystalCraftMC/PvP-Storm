@@ -28,7 +28,7 @@
         <profile>
             <id>com.crystalcraftmc.pvpstorm</id>
             <build>
-                <finalName>PvP Storm</finalName>
+                <!--<finalName>PvP Storm</finalName>-->
                 <directory>src/main/java/</directory>
                 <resources>
                     <resource>
@@ -48,14 +48,6 @@
                         <configuration>
                             <source>1.7</source>
                             <target>1.7</target>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <version>2.5</version>
-                        <configuration>
-                            <finalName>PvPStorm</finalName>
                         </configuration>
                     </plugin>
                 </plugins>
