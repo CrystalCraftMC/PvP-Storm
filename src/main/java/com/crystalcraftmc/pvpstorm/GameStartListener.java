@@ -26,14 +26,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import java.util.Set;
 import java.util.TreeSet;
 
-<<<<<<< HEAD
-public class GameStartListener implements Listener, CommandExecutor {
-    PvPStorm plugin;
-    
-  
-    public GameStartListener(PvPStorm plugin) {
-        this.plugin = plugin;
-=======
 public class GameStartListener implements Listener  {
 	//PvPStorm plugin;
 	private String stormerName;//Added this so that the stormer could be edited in config file for others. - jacc
@@ -47,7 +39,6 @@ public class GameStartListener implements Listener  {
     //IGNORE This method is NOT for human use. (It will be called once in the onEnable() method of the main plugin class file.)
 	public void setStormer(String name) {
        this.stormerName = name;
->>>>>>> experimental
     }
 	
 	public GameStartListener(PvPStorm plugin) {
@@ -58,13 +49,7 @@ public class GameStartListener implements Listener  {
     
     
     // WARNING: The following listener code was me experimenting. Needs research! - jf
-<<<<<<< HEAD
-    @EventHandler
-    public void onStart(PlayerCommandPreprocessEvent useCommand) {
-        if (useCommand.equals("start")) {
-            // TODO Implement counts of which players hit the Stormer - might use another event type?
-    }
-=======
+
     // WARNING#2:  I added a few commands to comply with my untested algorithm - jwood
     // Not on my computer at the moment - though I'll be able to test code tomorrow - jwood
     //WARNING#3: I made a few changes... so I am sorry for the confusion or intrusion into current edits-jacc
@@ -122,5 +107,4 @@ public class GameStartListener implements Listener  {
 			}
 		}
 	}
->>>>>>> experimental
 }
