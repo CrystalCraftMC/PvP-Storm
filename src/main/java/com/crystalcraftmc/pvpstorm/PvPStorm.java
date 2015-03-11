@@ -31,6 +31,8 @@ import org.bukkit.util.Vector;
 
 import java.util.Collection;
 
+import me.confuser.barapi.BarAPI;
+
 public class PvPStorm extends JavaPlugin {
     // TODO Implement mob boss health bar - perhaps in listener? NEEDS RESEARCH.
     
@@ -43,6 +45,15 @@ public class PvPStorm extends JavaPlugin {
     public void onDisable() {
         getLogger().info(ChatColor.RED + "PvP Storm has been stopped by the server.");
     }
+	
+	private void setBar(String message) {
+		for(Player p : Bukkit.getOnlinePlayers()){
+			if(BarAPI.hasBar(p)){
+				BarAPI.removeBar(p);
+			}
+			BarAPI.setMessage(p, message);
+		}
+	}
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         Player p = (Player) sender;
@@ -57,12 +68,12 @@ public class PvPStorm extends JavaPlugin {
                 return false;
             } else if (args.length >= 1) {
                 if (args[0].equalsIgnoreCase("start")) {
-                    Bukkit.broadcastMessage(ChatColor.DARK_RED + getConfig().getString("start-message"));
+                    setBar(ChatColor.DARK_RED + getConfig().getString("start-message"));
                     world.setStorm(true);
                     this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
                         @Override
                         public void run() {
-                            Bukkit.broadcastMessage(ChatColor.DARK_RED + "The PvP Storm is now hitting the Arena!");
+                            setBar(ChatColor.DARK_RED + "The PvP Storm is now hitting the Arena!");
                         }
                     }, 12000L); // 12000L == 10 minutes, 60L == 3 seconds, 20L == 1 second (it's the # of ticks)
                     // TODO Alert the listener to begin counting who hits the Stormer, in order to give prizes at end
