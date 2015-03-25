@@ -23,88 +23,57 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.Collection;
 
-public class GameStartListener implements Listener  {
-	//PvPStorm plugin;
-	private String stormerName;//Added this so that the stormer could be edited in config file for others. - jacc
-	private Set<String> playersWhoHitStormer; //changed to set and string - Players objects are memory hogs -jacc
-	private boolean enablePlayerHitStormerCounting; //enables onEntityVsEntity listener method
-	
-	//IGNORE this method - Only for use when an instances in called in the main plugin class. And only when Stormer name is needed to add to check permissions.
-	public String getStormer() {
-        return stormerName;
-    }
-    //IGNORE This method is NOT for human use. (It will be called once in the onEnable() method of the main plugin class file.)
-	public void setStormer(String name) {
-       this.stormerName = name;
-    }
-	
-	public GameStartListener(PvPStorm plugin) {
-		//this.plugin = plugin; # This line needs to be reworked, throwing compiler error
-		playersWhoHitStormer = new TreeSet<String>();
-		enablePlayerHitStormerCounting = false;
-	}
-    
-    
-    // WARNING: The following listener code was me experimenting. Needs research! - jf
+public class GameStartListener implements Listener {
+    private Collection<Player> hittingPlayers; //changed to set and string - Players objects are memory hogs -jacc
+    private boolean countHittingPlayers; //enables onEntityVsEntity listener method
+    private PvPStorm plugin;
 
-    // WARNING#2:  I added a few commands to comply with my untested algorithm - jwood
-    // Not on my computer at the moment - though I'll be able to test code tomorrow - jwood
-    //WARNING#3: I made a few changes... so I am sorry for the confusion or intrusion into current edits-jacc
-	
-	//TODO MOVE THESE... commands to plugin side? and rework so that they connect idk just an idea? commented it out for now - jacc
-	
-	/*@EventHandler
-	public void onStart(PlayerCommandPreprocessEvent useCommand) {
-		if (useCommand.equals("start")) {
-			// TODO Implement counts of which players hit the Stormer - might use another event type?
-			enablePlayerHitStormerCounting = true;
-		}
-		else if(useCommand.equals("stop")) {
-			enablePlayerHitStormerCounting = false;
-		}
-		else if(useCommand.equals("reset")) {
-			enablePlayerHitStormerCounting = false;
-			playersWhoHitStormer.clear();//clears the set
-		}
-		else if(useCommand.equals("getSet")) {//btw If this doesnt work I can try something else.
-			//this command is mostly for testing / debugging
-			if ((String[]) playersWhoHitStormer.toArray() == null) return;
-			useCommand.getPlayer().sendMessage((String[]) playersWhoHitStormer.toArray());
-		}
-		return;
-	}
-	*/
-    
-    // Warning below listener is untested! Though I will explain the idea - jwood
-    //listener is called when one entity hits another
-    //if the damager & damagee are both instanceof Player and the damagee.getName() is jflory7
-    //then this will record the Player object of the damager - the algorithm is set up so
-    //no duplicate Player objects are added to the arraylist
-    //note: an arraylist is an array of objects -- with the unique trait of being able to add
-    //elements with the ArrayLists's add method, to see how many objects you've saved you can
-    //call the ArrayList's size() method, and to get a specific object, you use the
-    //ArrayList's get(index) method, where index is an int (0 represents the first element)
-    //The result is a method that will start listening upon the "start" command (after it's tested)
-    //and will add each player that hits flory to the ArrayList (no duplicates), and stops listening
-    //upon the "stop" command. (added a "reset" command which turns the boolean flag variable
-    //playerHitStormerCounting to false (disables listener below), and empties the current arraylist)
-    //again, I note that this method is untested - jwood
-    //TODO RE: Warning: Using sets resolves the issue as sets will not add an item that it already contains -jacc
-	@EventHandler
-	public void onEntityVsEntity(EntityDamageByEntityEvent event) {
-		if(enablePlayerHitStormerCounting) {
-			if(event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-				Bukkit.broadcastMessage(ChatColor.GOLD + "debug: Both damager AND damagee are an instances of a Player");
-				Player damagee = (Player)event.getEntity();
-				Player damager = (Player)event.getDamager();
-				if(damagee.getName().equals(stormerName) && !damagee.getName().equals(null)) {
-					playersWhoHitStormer.add(damager.getName());
-					Bukkit.broadcastMessage(ChatColor.GOLD + "debug: player added to set");
-				}
-			}
-		}
-	}
+    /**
+     * Constructor for <code>GameStartListener</code>.
+     * @param plugin
+     */
+    public GameStartListener(PvPStorm plugin) {
+        this.plugin = plugin;
+        hittingPlayers = new ArrayList<Player>();
+        countHittingPlayers = false;
+    }
+
+    /**
+     * Untested listener method. Remove this line once tested. <br />
+     * <p/>
+     * This listener is called when one entity hits another. If the damager and damgee are both instanceof Player and
+     * the damagee.getName() == jflory7, then this will record the Player object of the damager. The algorithm is set up
+     * so no duplicate Player objects are added to the ArrayList. <br />
+     * <p/>
+     * Note that an ArrayList is an array of objects with the unique trait of being able to add elements with the
+     * ArrayList's <code>add</code> method, a dynamic count of all the Players stored with the <code>size()</code>
+     * method, and retrieve a specific object with the <code>get(index)</code> method. <br />
+     * <p/>
+     * The result is a method that will start listening upon the "/storm start" command and will add each player that
+     * hits the Stormer to the ArrayList without any duplicates, and it stops listening on the "/storm stop" command.
+     * There is also a "reset" command which turns the boolean <code>playerHitStormerCounting</code> to false and
+     * empties the current ArrayList.
+     * <p/>
+     * Warning: Using sets resolves the issue as sets will not add an item that it already contains. - Ivan
+     *
+     * @param event
+     * @author Alex Woodward
+     * @author Justin W. Flory
+     * @author Ivan Frasure
+     */
+    @EventHandler
+    public void onEntityVsEntity(EntityDamageByEntityEvent event) {
+        if (countHittingPlayers && event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "DEBUG: Both damager AND damagee are an instance of a Player");
+            Player damagee = (Player) event.getEntity();
+            Player damager = (Player) event.getDamager();
+            if (damagee.getDisplayName().equals(plugin.getConfig().getString("stormer")) && !damagee.getName().equals(null)) {
+                hittingPlayers.add(damager);
+                Bukkit.broadcastMessage(ChatColor.GOLD + "DEBUG: Player added to ArrayList");
+            }
+        }
+    }
 }

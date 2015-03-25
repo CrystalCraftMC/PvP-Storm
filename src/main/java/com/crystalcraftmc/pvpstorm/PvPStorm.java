@@ -16,6 +16,7 @@
 
 package com.crystalcraftmc.pvpstorm;
 
+import me.confuser.barapi.BarAPI;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -33,8 +34,6 @@ import java.io.IOException;
 import java.util.Collection;
 
 public class PvPStorm extends JavaPlugin {
-    // TODO Implement mob boss health bar - perhaps in listener? NEEDS RESEARCH.
-    
     public void onEnable() {
         getLogger().info(ChatColor.AQUA + "PvPStorm has been initialized!");
 
@@ -45,6 +44,8 @@ public class PvPStorm extends JavaPlugin {
             // Failed to submit the stats :-(
         }
 
+        GameStartListener gameStart = new GameStartListener(this);
+        GameEndListener gameEnd = new GameEndListener(this);
         getServer().getPluginManager().registerEvents(gameStart, this);
         getServer().getPluginManager().registerEvents(gameEnd, this);
     }
@@ -64,11 +65,13 @@ public class PvPStorm extends JavaPlugin {
 
                 if (args[0].equalsIgnoreCase("start")) {
                     Bukkit.broadcastMessage(ChatColor.DARK_RED + getConfig().getString("start-message"));
+                    if (getServer().getPluginManager().getPlugin("BarAPI") != null) setBar(ChatColor.DARK_RED + getConfig().getString("start-message"));
                     world.setStorm(true);
                     this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
                         @Override
                         public void run() {
                             Bukkit.broadcastMessage(ChatColor.DARK_RED + "The PvP Storm is now hitting the Arena!");
+                            if (getServer().getPluginManager().getPlugin("BarAPI") != null) setBar(ChatColor.DARK_RED + "The PvP Storm is now hitting the Arena!");
                         }
                     }, 12000L); // 12000L == 10 minutes, 60L == 3 seconds, 20L == 1 second (it's the # of ticks)
                     // TODO Alert the listener to begin counting who hits the Stormer, in order to give prizes at end
@@ -80,12 +83,12 @@ public class PvPStorm extends JavaPlugin {
                     return true;
                 } else if (args[0].equalsIgnoreCase("power")) {
                     if (args.length < 2) {
-                        sender.sendMessage(ChatColor.YELLOW + "The available Storm powers are:" +
-                                ChatColor.RED + "/storm power flare" +
-                                ChatColor.GRAY + "/storm power vanish" +
+                        sender.sendMessage(ChatColor.YELLOW + "The available Storm powers are:\n" +
+                                ChatColor.RED + "/storm power flare\n" +
+                                ChatColor.GRAY + "/storm power vanish\n" +
                                 ChatColor.AQUA + "/storm power timewarp");
                         return true;
-                    } else if (args[1].equalsIgnoreCase("flare")) {
+                    } else if (args[1].equalsIgnoreCase("flare")) { //TODO Add a cooldown of 30 seconds
                         Collection<? extends Player> players = Bukkit.getOnlinePlayers();
                         Location senderLoc = p.getLocation();
                         Location nearbyLoc;
@@ -95,7 +98,8 @@ public class PvPStorm extends JavaPlugin {
                             if (nearbyPlayer.getLocation().distanceSquared(senderLoc) <= 25) {
                                 nearbyLoc = nearbyPlayer.getLocation();
 
-                                nearbyPlayer.setHealth(nearbyPlayer.getHealth() - 2.0);
+                                if (nearbyPlayer.getHealth() <= 2.0 && nearbyPlayer != p) nearbyPlayer.setHealth(0.0D);
+                                else if (nearbyPlayer != p) nearbyPlayer.setHealth(nearbyPlayer.getHealth() - 2.0);
                                 nearbyPlayer.playSound(nearbyLoc, Sound.SUCCESSFUL_HIT, 1, 1);
                             }
                             p.playSound(senderLoc, Sound.EXPLODE, 1, 1);
@@ -107,7 +111,7 @@ public class PvPStorm extends JavaPlugin {
                         }
                         else p.setHealth(1.0);
                         return true;
-                    } else if (args[1].equalsIgnoreCase("vanish")) {
+                    } else if (args[1].equalsIgnoreCase("vanish")) { //TODO Add a cooldown of 3 minutes
                         Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.YELLOW + " used " + ChatColor.GRAY + " VANISH " + ChatColor.YELLOW + " ability!");
                         p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 3600, 0, false, false));
                         if (p.getHealth() > 5.0) p.setHealth(p.getHealth() - 5.0);
@@ -116,7 +120,7 @@ public class PvPStorm extends JavaPlugin {
                             Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.RED + " commit suicide with their own powers!");
                         } else p.setHealth(1.0);
                         return true;
-                    } else if (args[1].equalsIgnoreCase("timewarp")) {
+                    } else if (args[1].equalsIgnoreCase("timewarp")) { //TODO Add a cooldown of 15 seconds
                         Vector direction = p.getLocation().getDirection();
 
                         Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.YELLOW + " used " + ChatColor.RED + " TIMEWARP " + ChatColor.YELLOW + " ability!");
@@ -131,7 +135,13 @@ public class PvPStorm extends JavaPlugin {
         }
         return false;
     }
-    
-    private final GameStartListener gameStart = new GameStartListener(this);
-    private final GameEndListener gameEnd = new GameEndListener(this);
+
+    private void setBar(String message) {
+        for(Player p : Bukkit.getOnlinePlayers()){
+            if(BarAPI.hasBar(p)){
+                BarAPI.removeBar(p);
+            }
+            BarAPI.setMessage(p, message);
+        }
+    }
 }
