@@ -49,15 +49,9 @@ public class PvPStorm extends JavaPlugin {
         getServer().getPluginManager().registerEvents(gameEnd, this);
     }
 
-    public void onDisable() {
-        getLogger().info(ChatColor.RED + "PvP Storm has been stopped by the server.");
-    }
+    public void onDisable() { getLogger().info(ChatColor.RED + "PvPStorm has been stopped by the server."); }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        Player p = (Player) sender;
-        World world = p.getWorld();
-        String stormer = p.toString();
-
         if (cmd.getName().equalsIgnoreCase("storm")) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage("This command can only be run by a player.");
@@ -65,6 +59,9 @@ public class PvPStorm extends JavaPlugin {
             } else if (args.length < 1) {
                 return false;
             } else if (args.length >= 1) {
+                Player p = (Player) sender;
+                World world = p.getWorld();
+
                 if (args[0].equalsIgnoreCase("start")) {
                     Bukkit.broadcastMessage(ChatColor.DARK_RED + getConfig().getString("start-message"));
                     world.setStorm(true);
@@ -93,7 +90,7 @@ public class PvPStorm extends JavaPlugin {
                         Location senderLoc = p.getLocation();
                         Location nearbyLoc;
 
-                        Bukkit.broadcastMessage(stormer + ChatColor.YELLOW + " used " + ChatColor.GOLD + " FLARE " + ChatColor.YELLOW + " ability!");
+                        Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.YELLOW + " used " + ChatColor.GOLD + " FLARE " + ChatColor.YELLOW + " ability!");
                         for (Player nearbyPlayer : players) {
                             if (nearbyPlayer.getLocation().distanceSquared(senderLoc) <= 25) {
                                 nearbyLoc = nearbyPlayer.getLocation();
@@ -103,18 +100,28 @@ public class PvPStorm extends JavaPlugin {
                             }
                             p.playSound(senderLoc, Sound.EXPLODE, 1, 1);
                         }
-                        p.setHealth(p.getHealth() - 3.0);
+                        if (p.getHealth() > 3.0) p.setHealth(p.getHealth() - 3.0);
+                        else if (p.getHealth() <= 1.0) {
+                            p.setHealth(0.0);
+                            Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.RED + "commit suicide with their own powers!");
+                        }
+                        else p.setHealth(1.0);
                         return true;
                     } else if (args[1].equalsIgnoreCase("vanish")) {
-                        Bukkit.broadcastMessage(stormer + ChatColor.YELLOW + " used " + ChatColor.GRAY + " VANISH " + ChatColor.YELLOW + " ability!");
-                        // TODO Make user invisible at expense of health
+                        Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.YELLOW + " used " + ChatColor.GRAY + " VANISH " + ChatColor.YELLOW + " ability!");
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 120, 0, false, false));
+                        if (p.getHealth() > 5.0) p.setHealth(p.getHealth() - 5.0);
+                        else if (p.getHealth() <= 1.0) {
+                            p.setHealth(0.0);
+                            Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.RED + "commit suicide with their own powers!");
+                        } else p.setHealth(1.0);
                         return true;
                     } else if (args[1].equalsIgnoreCase("timewarp")) {
                         Vector direction = p.getLocation().getDirection();
 
-                        Bukkit.broadcastMessage(stormer + ChatColor.YELLOW + " used " + ChatColor.RED + " TIMEWARP " + ChatColor.YELLOW + " ability!");
+                        Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.YELLOW + " used " + ChatColor.RED + " TIMEWARP " + ChatColor.YELLOW + " ability!");
                         p.setVelocity(new Vector(direction.getX() * -2.5, 1.2, direction.getZ() * -2.5));
-                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 0));
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 180, 0));
                         return true;
                     }
                 } else {
