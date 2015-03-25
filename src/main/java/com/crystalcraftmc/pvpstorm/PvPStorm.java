@@ -16,11 +16,7 @@
 
 package com.crystalcraftmc.pvpstorm;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -80,9 +76,9 @@ public class PvPStorm extends JavaPlugin {
                     return true;
                 } else if (args[0].equalsIgnoreCase("power")) {
                     if (args.length < 2) {
-                        sender.sendMessage(ChatColor.YELLOW + "The available Storm powers are:" +
-                                ChatColor.RED + "/storm power flare" +
-                                ChatColor.GRAY + "/storm power vanish" +
+                        sender.sendMessage(ChatColor.YELLOW + "The available Storm powers are:\n" +
+                                ChatColor.RED + "/storm power flare\n" +
+                                ChatColor.GRAY + "/storm power vanish\n" +
                                 ChatColor.AQUA + "/storm power timewarp");
                         return true;
                     } else if (args[1].equalsIgnoreCase("flare")) {
@@ -103,7 +99,7 @@ public class PvPStorm extends JavaPlugin {
                         if (p.getHealth() > 3.0) p.setHealth(p.getHealth() - 3.0);
                         else if (p.getHealth() <= 1.0) {
                             p.setHealth(0.0);
-                            Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.RED + "commit suicide with their own powers!");
+                            Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.RED + " commit suicide with their own powers!");
                         }
                         else p.setHealth(1.0);
                         return true;
@@ -113,7 +109,7 @@ public class PvPStorm extends JavaPlugin {
                         if (p.getHealth() > 5.0) p.setHealth(p.getHealth() - 5.0);
                         else if (p.getHealth() <= 1.0) {
                             p.setHealth(0.0);
-                            Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.RED + "commit suicide with their own powers!");
+                            Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.RED + " commit suicide with their own powers!");
                         } else p.setHealth(1.0);
                         return true;
                     } else if (args[1].equalsIgnoreCase("timewarp")) {
