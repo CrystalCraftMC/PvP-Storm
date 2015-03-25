@@ -29,13 +29,22 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.io.IOException;
 import java.util.Collection;
 
 public class PvPStorm extends JavaPlugin {
     // TODO Implement mob boss health bar - perhaps in listener? NEEDS RESEARCH.
     
     public void onEnable() {
-        getLogger().info(ChatColor.AQUA + "PvP Storm v0.0.1 has been initialized!");
+        getLogger().info(ChatColor.AQUA + "PvPStorm has been initialized!");
+
+        try {
+            MetricsLite metrics = new MetricsLite(this);
+            metrics.start();
+        } catch (IOException e) {
+            // Failed to submit the stats :-(
+        }
+
         getServer().getPluginManager().registerEvents(gameStart, this);
         getServer().getPluginManager().registerEvents(gameEnd, this);
     }
