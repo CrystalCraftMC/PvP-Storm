@@ -1,4 +1,4 @@
-PvPStorm
+PvPStorm [![Build Status](https://travis-ci.org/CrystalCraftMC/PvPStorm.svg)](https://travis-ci.org/CrystalCraftMC/PvPStorm)
 =========
 
 ## Overview
