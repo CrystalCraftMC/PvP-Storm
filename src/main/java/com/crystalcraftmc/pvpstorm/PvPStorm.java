@@ -17,8 +17,9 @@
 package com.crystalcraftmc.pvpstorm;
 
 import me.confuser.barapi.BarAPI;
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+
+import org.bukkit.Bukkit; //TODO change chatcolor to what it was @flory
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -32,8 +33,35 @@ import org.bukkit.util.Vector;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PvPStorm extends JavaPlugin {
+	
+	/*Holds different powers one can use*/
+	private enum Power { FLARE, VANISH, TIMEWARP }
+	
+	/**Holds list of players & corresponding time of command use
+	 *  who are in cooldown for flare default(30s)*/
+	private Map<String, Long> flareList = new HashMap<String, Long>();
+	
+	/**Holds list of players & corresponding time of command use
+	 *  who are in cooldown for vanish default(3m)*/
+	private Map<String, Long> vanishList = new HashMap<String, Long>();
+	
+	/**Holds list of players & corresponding time of command use
+	 *  who are in cooldown for timewarp default(15s)*/
+	private Map<String, Long> timeWarpList = new HashMap<String, Long>();
+	
+	/**Holds cooldown delay for Flare default(30s)(30000 ms)*/
+	final private int FLARECOOLDOWN = 30000;
+	
+	/**Holds cooldown delay for Vanish default(3m)(180000 ms)*/
+	final private int VANISHCOOLDOWN = 180000;
+	
+	/**Holds cooldown delay for TimeWarp default(15s)(15000 ms)*/
+	final private int TIMEWARPCOOLDOWN = 15000;
+	
     public void onEnable() {
         getLogger().info(ChatColor.AQUA + "PvPStorm has been initialized!");
 
@@ -68,6 +96,7 @@ public class PvPStorm extends JavaPlugin {
                     if (getServer().getPluginManager().getPlugin("BarAPI") != null) setBar(ChatColor.DARK_RED + getConfig().getString("start-message"));
                     world.setStorm(true);
                     this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+                        //@Override
                         public void run() {
                             Bukkit.broadcastMessage(ChatColor.DARK_RED + "The PvP Storm is now hitting the Arena!");
                             if (getServer().getPluginManager().getPlugin("BarAPI") != null) setBar(ChatColor.DARK_RED + "The PvP Storm is now hitting the Arena!");
@@ -87,11 +116,21 @@ public class PvPStorm extends JavaPlugin {
                                 ChatColor.GRAY + "/storm power vanish\n" +
                                 ChatColor.AQUA + "/storm power timewarp");
                         return true;
-                    } else if (args[1].equalsIgnoreCase("flare")) { //TODO Add a cooldown of 30 seconds
+                    } else if (args[1].equalsIgnoreCase("flare")) { //TODO test cooldown of 30 seconds
+                    	
+                    	int timeLeft = hasCooledDown(p, Power.FLARE);
+                    	if(timeLeft != -1) {
+                    		p.sendMessage(ChatColor.DARK_RED + "Flare " + ChatColor.AQUA + 
+                    				"CoolDown for " + ChatColor.BLUE +
+                    				String.valueOf(timeLeft) + ChatColor.AQUA + " more seconds!");
+                    		return true;
+                    	}
+                        flareList.put(p.getName(), System.currentTimeMillis());
+                        
                         Collection<? extends Player> players = Bukkit.getOnlinePlayers();
                         Location senderLoc = p.getLocation();
                         Location nearbyLoc;
-
+                        
                         Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.YELLOW + " used " + ChatColor.GOLD + " FLARE " + ChatColor.YELLOW + " ability!");
                         for (Player nearbyPlayer : players) {
                             if (nearbyPlayer.getLocation().distanceSquared(senderLoc) <= 25) {
@@ -110,7 +149,17 @@ public class PvPStorm extends JavaPlugin {
                         }
                         else p.setHealth(1.0);
                         return true;
-                    } else if (args[1].equalsIgnoreCase("vanish")) { //TODO Add a cooldown of 3 minutes
+                    } else if (args[1].equalsIgnoreCase("vanish")) { //TODO test cooldown of 3 minutes
+                    	
+                    	int timeLeft = hasCooledDown(p, Power.VANISH);
+                    	if(timeLeft != -1) {
+                    		p.sendMessage(ChatColor.LIGHT_PURPLE + "Vanish " + ChatColor.AQUA + 
+                    				"CoolDown for " + ChatColor.BLUE +
+                    				String.valueOf(timeLeft) + ChatColor.AQUA + " more seconds!");
+                    		return true;
+                    	}
+                        vanishList.put(p.getName(), System.currentTimeMillis());
+                    	
                         Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.YELLOW + " used " + ChatColor.GRAY + " VANISH " + ChatColor.YELLOW + " ability!");
                         p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 3600, 0, false, false));
                         if (p.getHealth() > 5.0) p.setHealth(p.getHealth() - 5.0);
@@ -119,7 +168,17 @@ public class PvPStorm extends JavaPlugin {
                             Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.RED + " commit suicide with their own powers!");
                         } else p.setHealth(1.0);
                         return true;
-                    } else if (args[1].equalsIgnoreCase("timewarp")) { //TODO Add a cooldown of 15 seconds
+                    } else if (args[1].equalsIgnoreCase("timewarp")) { //TODO test cooldown of 15 seconds
+                    	
+                    	int timeLeft = hasCooledDown(p, Power.TIMEWARP);
+                    	if(timeLeft != -1) {
+                    		p.sendMessage(ChatColor.GREEN + "TimeWarp " + ChatColor.AQUA + 
+                    				"CoolDown for " + ChatColor.BLUE +
+                    				String.valueOf(timeLeft) + ChatColor.AQUA + " more seconds!");
+                    		return true;
+                    	}
+                        timeWarpList.put(p.getName(), System.currentTimeMillis());
+                    	
                         Vector direction = p.getLocation().getDirection();
 
                         Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.YELLOW + " used " + ChatColor.RED + " TIMEWARP " + ChatColor.YELLOW + " ability!");
@@ -142,5 +201,75 @@ public class PvPStorm extends JavaPlugin {
             }
             BarAPI.setMessage(p, message);
         }
+    }
+    
+    /**Checks whether the player has cooled down for the specific power
+     * @param p, the Player we're testing for
+     * @param Power, the power we're looking at
+     * @return int time since last use, -1 if has cooled down - time left if they have not
+     */
+    private int hasCooledDown(Player p, Power power) {
+    	int timeLeft;
+    	switch(power) {
+    	case FLARE:
+    		if(flareList.keySet() == null)
+    			return -1;
+    		for(String name : flareList.keySet()) {
+    			if(p.getName().equals(name)) {
+    				int timePassed = (int)(System.currentTimeMillis()-flareList.get(name));
+    				if(timePassed > FLARECOOLDOWN) {
+    					flareList.remove(name);
+    					return -1;
+    				}
+    				else {
+    					timeLeft = (int)(System.currentTimeMillis()-flareList.get(p.getName()));
+                		timeLeft = FLARECOOLDOWN-timeLeft;
+                		timeLeft /= 1000;
+    					return timeLeft;
+    				}
+    			}
+    		}
+    		return -1;
+    	case VANISH:
+    		if(vanishList.keySet() == null)
+    			return -1;
+    		for(String name : vanishList.keySet()) {
+    			if(p.getName().equals(name)) {
+    				int timePassed = (int)(System.currentTimeMillis()-vanishList.get(name));
+    				if(timePassed > VANISHCOOLDOWN) {
+    					vanishList.remove(name);
+    					return -1;
+    				}
+    				else {
+    					timeLeft = (int)(System.currentTimeMillis()-vanishList.get(p.getName()));
+                		timeLeft = VANISHCOOLDOWN-timeLeft;
+                		timeLeft /= 1000;
+    					return timeLeft;
+    				}
+    			}
+    		}
+    		return -1;
+    	case TIMEWARP:
+    		if(timeWarpList.keySet() == null)
+    			return -1;
+    		for(String name : timeWarpList.keySet()) {
+    			if(p.getName().equals(name)) {
+    				int timePassed = (int)(System.currentTimeMillis()-timeWarpList.get(name));
+    				if(timePassed > TIMEWARPCOOLDOWN) {
+    					timeWarpList.remove(name);
+    					return -1;
+    				}
+    				else {
+    					timeLeft = (int)(System.currentTimeMillis()-timeWarpList.get(p.getName()));
+                		timeLeft = TIMEWARPCOOLDOWN-timeLeft;
+                		timeLeft /= 1000;
+    					return timeLeft;
+    				}
+    			}
+    		}
+    		return -1;
+    	}
+    	p.sendMessage(ChatColor.RED + "Error at PvPStorm.hasCooledDown");
+    	return -1;
     }
 }
