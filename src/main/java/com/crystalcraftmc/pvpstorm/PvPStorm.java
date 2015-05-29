@@ -68,7 +68,6 @@ public class PvPStorm extends JavaPlugin {
                     if (getServer().getPluginManager().getPlugin("BarAPI") != null) setBar(ChatColor.DARK_RED + getConfig().getString("start-message"));
                     world.setStorm(true);
                     this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-                        @Override
                         public void run() {
                             Bukkit.broadcastMessage(ChatColor.DARK_RED + "The PvP Storm is now hitting the Arena!");
                             if (getServer().getPluginManager().getPlugin("BarAPI") != null) setBar(ChatColor.DARK_RED + "The PvP Storm is now hitting the Arena!");
