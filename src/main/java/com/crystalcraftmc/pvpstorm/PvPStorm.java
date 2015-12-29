@@ -92,15 +92,10 @@ public class PvPStorm extends JavaPlugin {
 
                 if (args[0].equalsIgnoreCase("start")) {
                     Bukkit.broadcastMessage(ChatColor.DARK_RED + getConfig().getString("start-message"));
-                    /*if (getServer().getPluginManager().getPlugin("BarAPI") != null) setBar(ChatColor.DARK_RED +
-                            getConfig().getString("start-message"));*/
                     world.setStorm(true);
                     this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-                        //@Override
                         public void run() {
                             Bukkit.broadcastMessage(ChatColor.DARK_RED + "The PvP Storm is now hitting the Arena!");
-                            /*if (getServer().getPluginManager().getPlugin("BarAPI") != null) setBar(ChatColor.DARK_RED +
-                                    "The PvP Storm is now hitting the Arena!");*/
                         }
                     }, 12000L); // 12000L == 10 minutes, 60L == 3 seconds, 20L == 1 second (it's the # of ticks)
                     // TODO Alert the listener to begin counting who hits the Stormer, in order to give prizes at end
@@ -199,26 +194,6 @@ public class PvPStorm extends JavaPlugin {
         }
         return false;
     }
-
-    /*
-    * TODO This method prevents the project from compiling. The BarAPI depends on libraries that no longer exist, e.g.
-    * GravityDevelopment and MetricsLite. Spigot 1.9 will include a BarAPI, so this particular feature can be revisited
-    * once 1.9 is officially released.
-    */
-    /**
-     * Method to set the message of the boss bar at top of client window.
-     *
-     * @param message the string to set the boss bar to
-     */
-    /*
-    private void setBar(String message) {
-        for(Player p : Bukkit.getOnlinePlayers()){
-            if(BarAPI.hasBar(p)){
-                BarAPI.removeBar(p);
-            }
-            BarAPI.setMessage(p, message);
-        }
-    }*/
     
     /**
      * Checks if a player has cooled down to use a power again.
