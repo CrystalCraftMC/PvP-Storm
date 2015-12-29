@@ -3,7 +3,7 @@ main: com.crystalcraftmc.pvpstorm.PvPStorm
 version: 0.0.2
 description: Make your players fight the powers of the gods!
 authors: [jflory7, Jacc734, Jwood9198]
-website: http://crystalcraftmc.com
+website: https://github.com/CrystalCraftMC/PvPStorm
 
 commands:
     storm:
