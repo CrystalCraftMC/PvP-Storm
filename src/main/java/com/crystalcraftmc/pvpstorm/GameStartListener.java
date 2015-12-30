@@ -15,13 +15,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 
+/**
+ * @author Alex Woodward
+ * @author Justin W. Flory
+ * @author Ivan Frasure
+ */
 public class GameStartListener implements Listener {
-    private Collection<Player> hittingPlayers; //changed to set and string - Players objects are memory hogs -jacc
-    private boolean countHittingPlayers; //enables onEntityVsEntity listener method
-    private PvPStorm plugin;
+private HashMap<Player, GameScore> hittingPlayers; //list of players who hit the stormer and the amount they inflicted
+private boolean countHittingPlayers; //enables onEntityVsEntity listener method
+private PvPStorm plugin;
 
     /**
      * Constructor for <code>GameStartListener</code>.
@@ -29,7 +33,7 @@ public class GameStartListener implements Listener {
      */
     public GameStartListener(PvPStorm plugin) {
         this.plugin = plugin;
-        hittingPlayers = new ArrayList<Player>();
+        hittingPlayers = new HashMap<Player, GameScore>();
         countHittingPlayers = false;
     }
 
@@ -52,10 +56,8 @@ public class GameStartListener implements Listener {
      * Warning: Using sets resolves the issue as sets will not add an item that it already contains. - Ivan
      *
      * @param event
-     * @author Alex Woodward
-     * @author Justin W. Flory
-     * @author Ivan Frasure
      */
+
     @EventHandler
     public void onEntityVsEntity(EntityDamageByEntityEvent event) {
         if (countHittingPlayers && event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
@@ -63,8 +65,25 @@ public class GameStartListener implements Listener {
             Player damagee = (Player) event.getEntity();
             Player damager = (Player) event.getDamager();
             if (damagee.getDisplayName().equals(plugin.getConfig().getString("stormer")) && !damagee.getName().equals(null)) {
-                hittingPlayers.add(damager);
-                Bukkit.broadcastMessage(ChatColor.GOLD + "DEBUG: Player added to ArrayList");
+
+                //collect the value of the attack.
+                double cDamage = event.getDamage();
+
+                //if player is already on the list update his damage amount, else add to list
+                if( hittingPlayers.containsKey(damager)) {
+                    //update values
+                    GameScore temp =  hittingPlayers.get(damager);
+                    cDamage = cDamage + temp.getDamageCount();
+                    //set new values
+                    temp.setDamageCount(cDamage);
+                    temp.upHitCount();
+
+                    Bukkit.broadcastMessage(ChatColor.GOLD + "DEBUG: Player's damage dealt to Stormer updated in HashMap");
+                } else {
+                    GameScore newScore = new GameScore(cDamage, 1);
+                    hittingPlayers.put(damager, newScore);
+                    Bukkit.broadcastMessage(ChatColor.GOLD + "DEBUG: Player added to HashMap for first time.");
+                }
             }
         }
     }
